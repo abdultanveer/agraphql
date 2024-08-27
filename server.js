@@ -2,6 +2,7 @@ var express = require("express")
 var { createHandler } = require("graphql-http/lib/use/express")
 var { buildSchema } = require("graphql")
 var { ruruHTML } = require("ruru/server")
+const { booksCollectionPromise } = require("./Mongodb")
 
  
 //npm install --save ruru
@@ -13,7 +14,6 @@ var schema = buildSchema(`
     rollDice(numDice: Int!, numSides: Int): [Int]
     getBooks:[Book]
     getMessage:String
-
   }
 
 type Book{
@@ -22,6 +22,8 @@ type Book{
 }
    type Mutation{
       setMessage(message: String):String
+      addBook(title: String!, author: String!): Book
+
     }
 
 `)
@@ -41,7 +43,20 @@ var root = {
     return "Hello world!"
   },
 
-  getBooks: ()=> books,
+  //getBooks: ()=> books,
+
+
+  getBooks: async () => {
+    const booksCollection = await booksCollectionPromise;
+    return booksCollection.find().toArray();
+  },
+  addBook: async ({ title, author }) => {
+    const booksCollection = await booksCollectionPromise;
+    const newBook = { title, author };
+    await booksCollection.insertOne(newBook);
+    return newBook;
+  },
+
   getMessage: () => message,
   setMessage: ({message:newMessage}) =>{
     message = newMessage;
