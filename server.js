@@ -11,15 +11,43 @@ var schema = buildSchema(`
   type Query {
     hello: String
     rollDice(numDice: Int!, numSides: Int): [Int]
+    getBooks:[Book]
+    getMessage:String
 
   }
+
+type Book{
+  title:String
+  author:String
+}
+   type Mutation{
+      setMessage(message: String):String
+    }
+
 `)
+
+let message = "hello ascendion"
+
+
+const books = [
+  {title: 'let us c', author:'kanetkar'},
+  {title: 'let us c++', author:'yash kanetkar'},
+
+]
  
 // The root provides a resolver function for each API endpoint
 var root = {
   hello() {
     return "Hello world!"
   },
+
+  getBooks: ()=> books,
+  getMessage: () => message,
+  setMessage: ({message:newMessage}) =>{
+    message = newMessage;
+    return message;
+  },
+
   rollDice(args) {
     var output = []
     for (var i = 0; i < args.numDice; i++) {
