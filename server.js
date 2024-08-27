@@ -22,6 +22,13 @@ var root = {
  
 var app = express()
  
+app.all(
+  "/graphql",
+  createHandler({
+    schema: schema,
+    rootValue: root,
+  })
+);
 // Create and use the GraphQL handler.
  
 // Serve the GraphiQL IDE.
